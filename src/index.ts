@@ -1,10 +1,9 @@
 import * as functions from 'firebase-functions';
 import express from 'express';
-import { addEntry } from './entryController';
+import routes from './routes/routes';
 
 const app = express();
-app.get('/', (req, res) => res.status(200).send('Hey there!'));
-app.post('/entries', addEntry);
+app.use('/', routes); // requests are handled here
 exports.app = functions.https.onRequest(app);
 
 // // Start writing Firebase Functions

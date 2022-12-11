@@ -1,5 +1,6 @@
 import { Response } from 'express';
-import { db } from './config/firebase';
+import * as GenericRepository from '../repositories/genericRepository';
+import * as ResponseConverter from '../utils/responseConverter';
 
 type EntryType = {
   title: string;
@@ -14,22 +15,15 @@ type Request = {
 
 export const addEntry = async (req: Request, res: Response) => {
   const { title, text } = req.body;
+  let addedEntry;
   try {
-    const entry = db.collection('entries').doc();
     const entryObject = {
-      id: entry.id,
       title,
       text,
     };
-
-    entry.set(entryObject);
-
-    res.status(200).send({
-      status: 'success',
-      message: 'entry added successfully',
-      data: entryObject,
-    });
+    addedEntry = await GenericRepository.addDocument(entryObject, 'entries');
   } catch (error: any) {
     res.status(500).json(error?.message);
   }
+  ResponseConverter.successful(res, addedEntry);
 };
